@@ -20,14 +20,21 @@ const main = async () => {
         switch (opt) {
             case 1:
                 //Show message
-                const term =  await leerInput('Ciudad: ');
+                const term = await leerInput('Ciudad: ');
 
                 //Search places
-                const places = await search.city( term );
-                
+                const places = await search.city(term);
+
                 // Select place
                 const idSelected = await listPlaces(places);
-                const placeSelected = places.find( place => place.id === idSelected )
+                
+                if(idSelected === '0') continue;
+                
+                const placeSelected = places.find(place => place.id === idSelected)
+
+                //Save on db
+                search.addHistory( placeSelected.name );
+
 
                 //Weather
                 const weather = await search.placeWeather(placeSelected.lat, placeSelected.lng);
@@ -35,15 +42,23 @@ const main = async () => {
                 //Show results
                 console.clear();
                 console.log('\nInformacion de la ciudad'.green)
-                console.log('Ciudad:', placeSelected.name.green );
+                console.log('Ciudad:', placeSelected.name.green);
                 console.log('Lat:', placeSelected.lat);
-                console.log('Lng:',placeSelected.lng);
-                console.log('Temperatura:',weather.temp);
+                console.log('Lng:', placeSelected.lng);
+                console.log('Temperatura:', weather.temp);
                 console.log('Minima:', weather.min);
                 console.log('Maxima:', weather.max);
                 console.log('Clima actual:', weather.desc.green);
 
                 break;
+
+            case 2:
+                search.capitalizeHistory.forEach( (place, i) => {
+                    const idx = ` ${i + 1}.`.green;
+                    console.log(`${idx} ${place}`)
+                })
+                break;
+
 
             default:
                 break;
